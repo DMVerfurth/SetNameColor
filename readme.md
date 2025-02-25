@@ -2,7 +2,7 @@
 
 ## Overview
 
-SetNameColor is a simple yet effective Minecraft plugin that allows players to customize their name color in chat. It supports both named colors and hex color codes.
+SetNameColor is a simple Minecraft plugin that allows players to customize their name color in chat. It supports both named colors and hex color codes.
 
 ## Features
 

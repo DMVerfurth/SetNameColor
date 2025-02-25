@@ -13,8 +13,8 @@ SetNameColor is a simple Minecraft plugin that allows players to customize their
 
 ## Installation
 
-1. Download the latest release of `SetNameColor.jar`.
-2. Place the `/build/libs/SetNameColor-1.0-SNAPSHOT.jar` file into the `plugins` folder of your Minecraft server.
+1. Download `/build/libs/SetNameColor-1.0-SNAPSHOT.jar`.
+2. Place the `.jar` file into the `plugins` folder of your Minecraft server.
 3. Restart the server to enable the plugin.
 
 ## Commands

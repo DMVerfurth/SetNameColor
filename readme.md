@@ -19,9 +19,9 @@ SetNameColor is a simple Minecraft plugin that allows players to customize their
 
 ## Commands
 
-| Command         | Usage               | Description                                                             |
-|-----------------|---------------------|-------------------------------------------------------------------------|
-| `/setnamecolor` | `<color / #rrggbb>` | Sets the player's name color in chat. Accepts named colors or hex codes |
+| Command         | Usage             | Description                                                             |
+|-----------------|-------------------|-------------------------------------------------------------------------|
+| `/setnamecolor` | `<color/#rrggbb>` | Sets the player's name color in chat. Accepts named colors or hex codes |
 
 ### Example Usage
 

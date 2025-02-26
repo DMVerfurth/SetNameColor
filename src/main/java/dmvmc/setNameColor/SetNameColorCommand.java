@@ -12,7 +12,6 @@ import org.bukkit.entity.Player;
 public class SetNameColorCommand implements CommandExecutor {
 
     private final SetNameColor plugin;
-
     public SetNameColorCommand(SetNameColor plugin) {
         this.plugin = plugin;
     }

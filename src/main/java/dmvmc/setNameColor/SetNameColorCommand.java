@@ -3,6 +3,7 @@ package dmvmc.setNameColor;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
+import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -20,19 +21,24 @@ public class SetNameColorCommand implements CommandExecutor {
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
 
         // Only allow players to set their name color
-        if (!(sender instanceof Player player)) {
+        if (!(sender instanceof Player targetPlayer))
             return true;
-        }
 
+        // Check permission to set own color
         if (!sender.hasPermission("setnamecolor.set")) {
             sender.sendMessage(Component.text("You do not have permission to use this command!", NamedTextColor.RED));
             return true;
         }
 
         // Ensure a value has been passed
-        if (args.length < 1) {
-            sender.sendMessage("Usage: /setnamecolor <color|#rrggbb>");
+        if (args.length < 1 || args.length > 2) {
+            sender.sendMessage("Usage: /setnamecolor <color|#rrggbb> [playerName]");
             return true;
+        }
+
+        // Check permission to set other color
+        if (args.length == 2 && !sender.hasPermission("setnamecolor.setOther")) {
+            sender.sendMessage(Component.text("You do not have permission to use set other players colors!", NamedTextColor.RED));
         }
 
         // Convert input to TextColor
@@ -45,16 +51,19 @@ public class SetNameColorCommand implements CommandExecutor {
 
         // Check for successful TextColor conversion
         if (color == null) {
-            sender.sendMessage("Usage: /setnamecolor <color|#rrggbb>");
+            sender.sendMessage(Component.text("Invalid color format! Please use a named color or hex code.", NamedTextColor.RED));
             return true;
         }
 
+        if (args.length == 2) targetPlayer = Bukkit.getPlayer(args[1]);
+
         // Set player color and send success message
-        plugin.setPlayerColor(player.getUniqueId(), color);
-        player.sendMessage(Component.text()
-                .append(Component.text("You have set your name color to ").color(NamedTextColor.WHITE))
-                .append(Component.text(input).color(color))
-                .append(Component.text("!").color(NamedTextColor.WHITE)));
+        assert targetPlayer != null;
+        plugin.setPlayerColor(targetPlayer.getUniqueId(), color);
+        sender.sendMessage(Component.text()
+                .append(Component.text("You have set " + ((args.length == 2) ?  args[1] + "'s" : "your") + " name color to ", NamedTextColor.WHITE))
+                .append(Component.text(input, color))
+                .append(Component.text("!", NamedTextColor.WHITE)));
 
         return true;
 

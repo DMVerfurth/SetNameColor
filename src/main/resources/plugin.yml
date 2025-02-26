@@ -7,10 +7,14 @@ description: A plugin that allows players to set their name color in chat
 commands:
   setnamecolor:
     description: Sets the color of your name in chat
-    usage: /setnamecolor <color|#rrggbb>
+    usage: /setnamecolor <color|#rrggbb> [playerName]
     permission: setnamecolor.set
 
 permissions:
   setnamecolor.set:
     description: Allows the player to set their name color
     default: true
+
+  setnamecolor.setOther:
+    description: Allows the player to set other players name color
+    default: op

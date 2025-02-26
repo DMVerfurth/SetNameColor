@@ -28,6 +28,7 @@ public final class SetNameColor extends JavaPlugin {
 
         // Register command and chat listener
         getCommand("setnamecolor").setExecutor(new SetNameColorCommand(this));
+        getCommand("setnamecolor").setTabCompleter(new SetNameColorTabCompleter());
         getServer().getPluginManager().registerEvents(new PlayerChatListener(this), this);
         getServer().getScheduler().runTaskTimer(this, this::savePlayerColors, 6000L, 6000L);
         getLogger().info("Enabled SetNameColor");

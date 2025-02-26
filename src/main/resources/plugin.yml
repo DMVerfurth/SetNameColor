@@ -1,5 +1,5 @@
 name: SetNameColor
-version: 1.0-SNAPSHOT
+version: v1.1
 main: dmvmc.setNameColor.SetNameColor
 api-version: "1.21"
 description: A plugin that allows players to set their name color in chat

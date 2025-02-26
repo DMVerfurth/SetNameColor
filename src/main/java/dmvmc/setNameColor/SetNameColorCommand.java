@@ -39,6 +39,7 @@ public class SetNameColorCommand implements CommandExecutor {
         // Check permission to set other color
         if (args.length == 2 && !sender.hasPermission("setnamecolor.setOther")) {
             sender.sendMessage(Component.text("You do not have permission to use set other players colors!", NamedTextColor.RED));
+            return true;
         }
 
         // Convert input to TextColor
@@ -55,10 +56,14 @@ public class SetNameColorCommand implements CommandExecutor {
             return true;
         }
 
+        // Find specified player
         if (args.length == 2) targetPlayer = Bukkit.getPlayer(args[1]);
+        if (targetPlayer == null) {
+            sender.sendMessage(Component.text("Player not found!", NamedTextColor.RED));
+            return true;
+        }
 
         // Set player color and send success message
-        assert targetPlayer != null;
         plugin.setPlayerColor(targetPlayer.getUniqueId(), color);
         sender.sendMessage(Component.text()
                 .append(Component.text("You have set " + ((args.length == 2) ?  args[1] + "'s" : "your") + " name color to ", NamedTextColor.WHITE))

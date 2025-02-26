@@ -10,23 +10,20 @@ import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 
 public final class SetNameColor extends JavaPlugin {
 
     private final Map<UUID, TextColor> playerColors = new HashMap<>();
-
     private File playerColorsFile;
     private FileConfiguration playerColorsConfig;
 
     @Override
     public void onEnable() {
 
-        // Create/load existing player colors file
-        createPlayerColorsFile();
-        loadPlayerColors();
-
         // Register command and chat listener
+        setupConfig();
         getCommand("setnamecolor").setExecutor(new SetNameColorCommand(this));
         getCommand("setnamecolor").setTabCompleter(new SetNameColorTabCompleter());
         getServer().getPluginManager().registerEvents(new PlayerChatListener(this), this);
@@ -49,20 +46,29 @@ public final class SetNameColor extends JavaPlugin {
         playerColors.put(uuid, color);
     }
 
-    private void createPlayerColorsFile() {
+    private void setupConfig() {
+        createDataFolder();
+        createPlayerColorsFile();
+        loadPlayerColors();
+    }
 
-        // Create data folder if none exists
-        if (!getDataFolder().exists()) {
-            getDataFolder().mkdirs();
+    private void createDataFolder() {
+        if (!getDataFolder().exists() && getDataFolder().mkdirs()) {
+            getLogger().info("Created data folder for SetNameColor");
         }
+    }
+
+    private void createPlayerColorsFile() {
 
         // Create player color yml if none exists
         playerColorsFile = new File(getDataFolder(), "playerColors.yml");
         if (!playerColorsFile.exists()) {
             try {
-                playerColorsFile.createNewFile();
+                if (playerColorsFile.createNewFile()) {
+                    getLogger().info("Created playerColors.yml");
+                }
             } catch (IOException e) {
-                getLogger().severe("Could not create file for playerColors.yml");
+                getLogger().severe("Could not create playerColors.yml");
             }
         }
 
@@ -74,37 +80,29 @@ public final class SetNameColor extends JavaPlugin {
     private void loadPlayerColors() {
 
         // Check for saved player colors
-        if (!playerColorsConfig.contains("playerColors")) { return; }
+        if (!playerColorsConfig.contains("playerColors")) return;
 
-        // Load each player color entry
-        for (String key : playerColorsConfig.getConfigurationSection("playerColors").getKeys(false)) {
-
-            // Retrieve player and color
-            UUID uuid = UUID.fromString(key);
-            String hex = playerColorsConfig.getString("playerColors." + key);
-            if (hex == null || !hex.startsWith("#") || hex.length() != 7) { continue; }
-
-            // Set player and color
-            TextColor color = TextColor.fromHexString(hex);
-            playerColors.put(uuid, color);
-
-        }
+        playerColorsConfig.getConfigurationSection("playerColors")
+                .getKeys(false)
+                .forEach(key -> {
+                    UUID uuid = UUID.fromString(key);
+                    Optional.ofNullable(playerColorsConfig.getString("playerColors." + key))
+                            .filter(this::isValidHexColor)
+                            .map(TextColor::fromHexString)
+                            .ifPresent(color -> playerColors.put(uuid, color));
+                });
 
     }
 
     private void savePlayerColors() {
 
         // Check for player colors file configuration
-        if (playerColorsConfig == null || playerColorsFile == null) { return; }
+        if (playerColorsConfig == null || playerColorsFile == null) return;
 
         // Set each player color
         playerColorsConfig.set("playerColors", null);
-        for (Map.Entry<UUID, TextColor> entry : playerColors.entrySet()) {
-
-            String hex = String.format("#%06X", entry.getValue().value());
-            playerColorsConfig.set("playerColors." + entry.getKey(), hex);
-
-        }
+        playerColors.forEach((uuid, color) ->
+                playerColorsConfig.set("playerColors." + uuid, color.asHexString()));
 
         // Save colors to file
         try {
@@ -113,6 +111,10 @@ public final class SetNameColor extends JavaPlugin {
             getLogger().severe("Could not save playerColors.yml");
         }
 
+    }
+
+    private boolean isValidHexColor(String hex) {
+        return hex != null && hex.matches("^#[0-9a-fA-F]{6}$");
     }
 
 }

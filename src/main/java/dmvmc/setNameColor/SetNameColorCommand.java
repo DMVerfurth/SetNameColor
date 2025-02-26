@@ -8,6 +8,7 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 
 public class SetNameColorCommand implements CommandExecutor {
 
@@ -17,7 +18,7 @@ public class SetNameColorCommand implements CommandExecutor {
     }
 
     @Override
-    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+    public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, String @NotNull [] args) {
 
         // Only allow players to set their name color
         if (!(sender instanceof Player targetPlayer))
@@ -25,7 +26,9 @@ public class SetNameColorCommand implements CommandExecutor {
 
         // Check permission to set own color
         if (!sender.hasPermission("setnamecolor.set")) {
-            sender.sendMessage(Component.text("You do not have permission to use this command!", NamedTextColor.RED));
+            sender.sendMessage(Component.text()
+                    .content("You do not have permission to use this command!")
+                    .color(NamedTextColor.RED));
             return true;
         }
 
@@ -37,7 +40,9 @@ public class SetNameColorCommand implements CommandExecutor {
 
         // Check permission to set other color
         if (args.length == 2 && !sender.hasPermission("setnamecolor.setOther")) {
-            sender.sendMessage(Component.text("You do not have permission to use set other players colors!", NamedTextColor.RED));
+            sender.sendMessage(Component.text()
+                    .content("You do not have permission to use set other players colors!")
+                    .color(NamedTextColor.RED));
             return true;
         }
 
@@ -51,7 +56,9 @@ public class SetNameColorCommand implements CommandExecutor {
 
         // Check for successful TextColor conversion
         if (color == null) {
-            sender.sendMessage(Component.text("Invalid color format! Please use a named color or hex code.", NamedTextColor.RED));
+            sender.sendMessage(Component.text()
+                    .content("Invalid color format! Please use a named color or hex code.")
+                    .color(NamedTextColor.RED));
             return true;
         }
 
@@ -63,9 +70,10 @@ public class SetNameColorCommand implements CommandExecutor {
         }
 
         // Set player color and send success message
+        String identifier = ((args.length == 2) ?  args[1] + "'s" : "your");
         plugin.setPlayerColor(targetPlayer.getUniqueId(), color);
         sender.sendMessage(Component.text()
-                .append(Component.text("You have set " + ((args.length == 2) ?  args[1] + "'s" : "your") + " name color to ", NamedTextColor.WHITE))
+                .append(Component.text("You have set " + identifier + " name color to ", NamedTextColor.WHITE))
                 .append(Component.text(input, color))
                 .append(Component.text("!", NamedTextColor.WHITE)));
 
